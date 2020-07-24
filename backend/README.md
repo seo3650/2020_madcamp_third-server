@@ -36,9 +36,21 @@ res: contactNumber, contactTime
 req: id, blockUserId
 res: blockUserId
 ```
+
 ```
 /api/friend/deleteBlockUser - by DELETE
 req: id, blockUserId
 res: blockUserId
 ```
-## 
+## Image crtl
+```
+/api/image/uploadProfile - by POST
+req: id, imageKind
+res: boolean
+```
+
+```
+/api/image/downloadProfile - by GET
+req: id
+res: image binary
+```

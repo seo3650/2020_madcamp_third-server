@@ -14,6 +14,7 @@ const Account = new Schema({
     phoneNumber: String,
     friends: [JSON],
     blockList: [String],
+    profileImage: String,
     create_date: { type: Date, default: Date.now },
 })
 
@@ -27,6 +28,9 @@ Account.statics.register = function({ id, password, name, phoneNumber }: any): s
         password: hash(password),
         name: name,
         phoneNumber: phoneNumber,
+        friends: [],
+        blockList: [],
+        profileImage: null
     });
     account.save();
     return id;
