@@ -4,7 +4,7 @@ const router = express.Router();
 const accountCtrl = require('./account.controller');
 
 router.post('/register', accountCtrl.register);
-// account.post('/login', accountCtrl.login);
-// account.post('/delete', accountCtrl.delete);
+router.post('/login', accountCtrl.login);
+router.post('/delete', accountCtrl.withdrawal);
 
 export default router;

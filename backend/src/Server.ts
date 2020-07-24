@@ -10,9 +10,24 @@ import 'express-async-errors';
 import BaseRouter from './routes';
 import logger from '@shared/Logger';
 
+const mongoose = require('mongoose');
+require('dotenv').config();
+require('source-map-support').install();
 
 // Init express
 const app = express();
+
+mongoose.connect("mongodb://localhost/dating", 
+  { useNewUrlParser: true, useUnifiedTopology: true });
+var db = mongoose.connection;
+db.on('error', function(error: any) {
+  console.error("Connection error;", error);
+});
+db.once('open', function(){
+  console.log("Connected to mongod server");
+});
+
+process.on('unhandledRejection', console.log);
 
 
 

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 import crypto from 'crypto';
 
@@ -9,8 +9,8 @@ function hash(password: string) {
 
 const Account = new Schema({
     id: String,
-    name: String,
     password: String,
+    name: String,
     phoneNumber: String,
     friends: [JSON],
     create_date: { type: Date, default: Date.now },
@@ -20,17 +20,23 @@ Account.statics.findByID = function(id: string) {
     return this.findOne({'id': id}).exec();
 }
 
-Account.statics.register = function({ id, name, password, phoneNumber }: any) {
+Account.statics.register = function({ id, password, name, phoneNumber }: any): string {
     const account = new this({
         id: id,
-        name: name,
         password: hash(password),
+        name: name,
         phoneNumber: phoneNumber,
     });
-    return account.save();
+    account.save();
+    return id;
 }
 
-Account.methods.withdrawl = function() {
+Account.methods.validatePassword = function(password: string) {
+    const hashed = hash(password);
+    return this.password === hashed;
+}
+
+Account.methods.withdrawal = function() {
     return this.remove();
 }
 
