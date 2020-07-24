@@ -1,2 +1,6 @@
-/node_modules
-/env/.env
+node_modules
+node_modules/vary/package.json
+dist/*
+.env
+*.log
+backend/node_modules/**/*
