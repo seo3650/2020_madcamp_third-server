@@ -45,5 +45,4 @@ Account.methods.withdrawal = function() {
     return this.remove();
 }
 
-
 module.exports = mongoose.model("Account", Account);

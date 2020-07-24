@@ -162,7 +162,6 @@ exports.addContact = async(req: any, res: any) => {
     }
 
     /* Add contact */
-    console.log(friendAccount);
     let friendContactInfo: Array<any> = [];
     try {
         friendContactInfo = await account.friends.filter(function(object: any) {
@@ -172,7 +171,6 @@ exports.addContact = async(req: any, res: any) => {
         res.status(500).json({ message: e.message });
         return;
     }
-    console.log(friendContactInfo);
 
     if (friendContactInfo.length == 0) {
         await Account.updateOne(
@@ -192,16 +190,14 @@ exports.addContact = async(req: any, res: any) => {
     }
     friendContactInfo[0].contactTime.push(req.body.contactTime);
     friendContactInfo[0].continueTime.push(req.body.continueTime);
-    console.log(friendContactInfo);
     await Account.updateOne(
         { _id: account._id },
         {
-            $pop: {
-                friends: { id: friendAccount._id }
+            $pull: {
+                friends: { friendID: friendAccount._id }
             }
         }
     )
-    console.log(account);
     await Account.updateOne(
         { _id: account._id },
         {
@@ -210,6 +206,72 @@ exports.addContact = async(req: any, res: any) => {
             }
         }
     )
-    console.log(account);
+    res.status(200).json({ message: true });
+}
 
+exports.getIntimacy = async(req: any, res: any) => {
+    console.log(req.query)
+    /* Verify data */
+    const schema = Joi.object().keys({
+        id: Joi.string().required(),
+        friendID: Joi.string().required(),
+    });
+    const result = schema.validate(req.query);
+    if (result.error) {
+        res.status(400).json({ message: result.error.message });
+        return;
+    }
+    
+    /* Find account */
+    let account = null;
+    try {
+        account = await Account.findByID(req.query.id);
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+        return;
+    }
+    if (!account) {
+        res.status(404).json({ message: "Can't find account" });
+    }
+
+    /* Find friend account */
+    let friendAccount: any = null;
+    try {
+        friendAccount = await Account.findByID(req.query.friendID);
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+        return;
+    }
+    if (!friendAccount) {
+        res.status(404).json({ message: "Can't find friend account" });
+        return;
+    }
+
+    /* Get friend contact info */
+    let friendContactInfo: Array<any> = [];
+    try {
+        friendContactInfo = await account.friends.filter(function(object: any) {
+            return object.friendID.toString() == <string>friendAccount._id;
+        })
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+        return;
+    }
+
+    if (friendContactInfo.length == 0) {
+        res.status(404).json({ message: "Can't find friend contact info." });
+        return;
+    }
+    
+    /* Get intimacy score */
+    let intimacyScore = 0;
+    let contactTimes = friendContactInfo[0].continueTime
+    for (var i = 0; i < contactTimes.length; i++) {
+        intimacyScore += contactTimes[i];
+    }
+    
+    res.status(200).json({ 
+        intimacyScore: intimacyScore,
+        conatctTime: friendContactInfo[0].contactTime,
+        continueTime: friendContactInfo[0].continueTime});
 }

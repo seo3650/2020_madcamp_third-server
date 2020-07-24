@@ -21,15 +21,15 @@ res: message
 
 ## Friends crtl
 ```
-/api/friend/addContact
+/api/friend/addContact - by POST
 req: id, friendID, contactTime, continueTime
 res: boolean
 ```
 
 ```
-/api/friend/getContact - 
+/api/friend/getIntimacy - by GET
 req: id, friendID   
-res: intimacyScore, contactTime array, continueTime array
+res: intimacyScore, contactTime: array<number>, continueTime: arra<number>
 ```
 
 ```
