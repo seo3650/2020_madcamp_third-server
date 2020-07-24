@@ -28,7 +28,7 @@ exports.addBlockUser = async (req: any, res: any) => {
     }
 
     /* Find block user */
-    let blockAccount = null;
+    let blockAccount: any = null;
     try {
         blockAccount = await Account.findByID(req.body.blockUserId);
     } catch (e) {
@@ -42,7 +42,9 @@ exports.addBlockUser = async (req: any, res: any) => {
 
     /* Check duplicate */
     let blockUser = await account.blockList.filter(function(object: string) {
-        return object == req.body.blockUserId;
+        console.log(object.toString());
+        console.log(req.body.blockUserId);
+        return object.toString() == blockAccount._id;
     }) 
     if (blockUser.length != 0) {
         res.status(409).json({ message: "Already blocked user." });
@@ -109,7 +111,7 @@ exports.deleteBlockUser = async (req: any, res: any) => {
     }
 
     /* Delete blockUser */
-    const updateResult = await Account.updateOne(
+    await Account.updateOne(
         { _id: account._id },
         {
             $pull: {
@@ -147,7 +149,7 @@ exports.addContact = async(req: any, res: any) => {
     }
 
     /* Find friend account */
-    let friendAccount = null;
+    let friendAccount: any = null;
     try {
         friendAccount = await Account.findByID(req.body.friendID);
     } catch (e) {
@@ -160,20 +162,25 @@ exports.addContact = async(req: any, res: any) => {
     }
 
     /* Add contact */
-    let friendContactInfo = null;
+    console.log(friendAccount);
+    let friendContactInfo: Array<any> = [];
     try {
-        friendContactInfo = await account.findFriendContactInfo(friendAccount._id);
+        friendContactInfo = await account.friends.filter(function(object: any) {
+            return object.friendID.toString() == <string>friendAccount._id;
+        })
     } catch (e) {
         res.status(500).json({ message: e.message });
         return;
     }
-    if (!friendContactInfo) {
+    console.log(friendContactInfo);
+
+    if (friendContactInfo.length == 0) {
         await Account.updateOne(
             { _id: account._id },
             {
                 $push: {
                     friends: {
-                        id: friendAccount._id,
+                        friendID: friendAccount._id,
                         contactTime: [req.body.contactTime],
                         continueTime: [req.body.continueTime],
                     }
@@ -183,10 +190,9 @@ exports.addContact = async(req: any, res: any) => {
         res.status(200).json({ message: true });
         return;
     }
+    friendContactInfo[0].contactTime.push(req.body.contactTime);
+    friendContactInfo[0].continueTime.push(req.body.continueTime);
     console.log(friendContactInfo);
-    friendContactInfo.contactTime.push(req.body.contactTime);
-    friendContactInfo.continueTime.push(req.body.continueTime);
-    
     await Account.updateOne(
         { _id: account._id },
         {
