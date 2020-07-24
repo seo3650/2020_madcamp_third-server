@@ -1,42 +1,44 @@
 # Sitemap
 ## Account crtl
 ```
-/account/register
-```
-req: userID, userPW, Phone   
+/api/account/register by POST
+req: id, password, name, phoneNumber   
 res: userID
 ```
-/account/login - login by POST
+
 ```
-req: userID, userPW   
+/api/account/login - by POST
+req: id, password  
 res: userID, name
 ```
-/account/delete - delete account by POST
-```
-req: userID, password
-res: boolean
 
-## FriendsI crtl
 ```
-/friend/register
+/api/account/delete - by DELTE
+req: id, password
+res: message
 ```
+
+
+## Friends crtl
+```
+/api/friend/register
 req: name, contactTime
 ```
-/friend/getUser - 
+
 ```
+/api/friend/getUser - 
 req: userName, friendName   
 res: contactNumber, contactTime
-## 
+```
 
-# Database
-## Account
-id, pw, phone, friend array
-## Friend
-[
-       
-    {   
-        friendName,   
-        contactNumber,   
-        contactTime,   
-    }   
-]
+```
+/api/friend/addBlockUser - by PUT
+req: id, blockUserId
+res: blockUserId
+```
+```
+/api/friend/deleteBlockUser - by DELETE
+req: id, blockUserId
+res: blockUserId
+```
+## 

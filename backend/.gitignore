@@ -3,4 +3,3 @@ node_modules/vary/package.json
 dist/*
 .env
 *.log
-backend/node_modules/**/*

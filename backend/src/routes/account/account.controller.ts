@@ -1,6 +1,5 @@
-const Joi = require('joi');
+var Joi = require('joi');
 var Account = require('../../../models/account');
-const debug = require('debug')('account');
 
 exports.register = async (req: any, res: any) => {
     console.log(req.body);

@@ -13,6 +13,7 @@ const Account = new Schema({
     name: String,
     phoneNumber: String,
     friends: [JSON],
+    blockList: [String],
     create_date: { type: Date, default: Date.now },
 })
 
@@ -39,5 +40,6 @@ Account.methods.validatePassword = function(password: string) {
 Account.methods.withdrawal = function() {
     return this.remove();
 }
+
 
 module.exports = mongoose.model("Account", Account);
