@@ -21,14 +21,15 @@ res: message
 
 ## Friends crtl
 ```
-/api/friend/register
-req: name, contactTime
+/api/friend/addContact
+req: id, friendID, contactTime, continueTime
+res: boolean
 ```
 
 ```
-/api/friend/getUser - 
-req: userName, friendName   
-res: contactNumber, contactTime
+/api/friend/getContact - 
+req: id, friendID   
+res: intimacyScore, contactTime array, continueTime array
 ```
 
 ```
@@ -39,7 +40,7 @@ res: blockUserId
 
 ```
 /api/friend/deleteBlockUser - by DELETE
-req: id, blockUserId
+req: id, unblockUserId
 res: blockUserId
 ```
 ## Image crtl
