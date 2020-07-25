@@ -15,6 +15,7 @@ const Account = new Schema({
     friends: [JSON],
     blockList: [String],
     profileImage: String,
+    macAddress: String,
     create_date: { type: Date, default: Date.now },
 })
 
@@ -22,7 +23,7 @@ Account.statics.findByID = function(id: string) {
     return this.findOne({'id': id}).exec();
 }
 
-Account.statics.register = function({ id, password, name, phoneNumber }: any): string {
+Account.statics.register = function({ id, password, name, phoneNumber, macAddress }: any): string {
     const account = new this({
         id: id,
         password: hash(password),
@@ -30,7 +31,8 @@ Account.statics.register = function({ id, password, name, phoneNumber }: any): s
         phoneNumber: phoneNumber,
         friends: [],
         blockList: [],
-        profileImage: null
+        profileImage: null,
+        macAddress: macAddress
     });
     account.save();
     return id;

@@ -31,7 +31,6 @@ exports.uploadProfile = async (req: any, res: any) => {
     const fileName = req.query.id
         + "_" + req.query.imageKind
         + "_" + req.file.originalname;
-    console.log(fileName)
     const updateResult = await Account.updateOne(
         { _id: account._id },
         {
@@ -40,6 +39,7 @@ exports.uploadProfile = async (req: any, res: any) => {
             }
         }
     )
+    console.log("Upload: " + fileName);
 
     res.status(200).json({ message: true })
 }
@@ -55,12 +55,12 @@ exports.downloadProfile = async (req: any, res: any) => {
     }
 
     /* Download register */
-    console.log(__dirname + "../../../../public/images/");
     const fileName =
         req.query.id
         + "_" + req.query.imageKind
         + "_" + req.query.name;
 
     res.sendFile(fileName, { root: __dirname + "/../../../../public/images/" });
+    console.log("Download: " + fileName);
     return;
 }

@@ -2,7 +2,7 @@
 ## Account crtl
 ```
 /api/account/register by POST
-req: id, password, name, phoneNumber   
+req: id, password, name, phoneNumber, macAddress
 res: userID
 ```
 
@@ -18,6 +18,11 @@ req: id, password
 res: message
 ```
 
+```
+/api/account/findUser - by GET
+req: macAddress
+res: userID, userName
+```
 
 ## Friends crtl
 ```
@@ -43,6 +48,7 @@ res: blockUserId
 req: id, unblockUserId
 res: blockUserId
 ```
+
 ## Image crtl
 ```
 /api/image/uploadProfile - by POST

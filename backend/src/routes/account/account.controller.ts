@@ -8,7 +8,8 @@ exports.register = async (req: any, res: any) => {
         id: Joi.string().alphanum().min(3).max(15).required(),
         name: Joi.string().required(),
         password: Joi.string().required().min(4).max(15),
-        phoneNumber: Joi.string().min(10).max(13).required()
+        phoneNumber: Joi.string().min(10).max(13).required(),
+        macAddress: Joi.string().required()
     });
     const result = schema.validate(req.body);
     if (result.error) {
@@ -107,4 +108,33 @@ exports.withdrawal = async (req: any, res: any) => {
     }
     res.status(200).json({ message: true })
     return;
+}
+
+exports.findUser = async (req: any, res: any) => {
+    /* Verify data */
+    const schema = Joi.object().keys({
+        macAddress: Joi.string().required()
+    });
+    const result = schema.validate(req.query);
+    if (result.error) {
+        res.status(400).json({ message: result.error.message });
+        return;
+    }
+
+    /* Get account */
+    let account = null;
+    try {
+        account = await Account.findOne({ macAddress: req.query.macAddress });
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+        return;
+    }
+    if (!account) {
+        res.status(404).json({ message: "Can't find account" });
+        return;
+    }
+    console.log(account)
+
+    res.status(200).json({ userID: account.id, userName: account.name });
+
 }
