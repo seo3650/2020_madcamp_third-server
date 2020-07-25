@@ -76,7 +76,7 @@ exports.withdrawal = async (req: any, res: any) => {
         id: Joi.string().required(),
         password: Joi.string().required(),
     });
-    const result = schema.validate(req.body);
+    const result = schema.validate(req.query);
     if (result.error) {
         res.status(400).json({ message: result.error.message });
         return;
@@ -84,7 +84,7 @@ exports.withdrawal = async (req: any, res: any) => {
     /* Get account */
     let account = null;
     try {
-        account = await Account.findByID(req.body.id);
+        account = await Account.findByID(req.query.id);
     } catch (e) {
         res.status(500).json({ message: e.message });
         return;
@@ -94,7 +94,7 @@ exports.withdrawal = async (req: any, res: any) => {
         return;
     }
 
-    const password = req.body.password;
+    const password = req.query.password;
     if (!account || !account.validatePassword(password)) {
         res.status(401).json({ message: "Invalid PW" })
         return;
