@@ -24,6 +24,18 @@ req: macAddress
 res: userID, userName
 ```
 
+```
+/api/account/updateProfile - by POST
+req: id, age, region, height, job, hobby, smoke, drink
+res: boolean
+```
+
+```
+/api/account/downloadProfile - by GET
+req: id
+res: age, region, height, job, hobby, smoke, drink
+```
+
 ## Friends crtl
 ```
 /api/friend/addContact - by POST

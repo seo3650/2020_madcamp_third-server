@@ -7,5 +7,7 @@ router.post('/register', accountCtrl.register);
 router.post('/login', accountCtrl.login);
 router.delete('/delete', accountCtrl.withdrawal);
 router.get('/findUser', accountCtrl.findUser);
+router.post('/updateProfile', accountCtrl.updateProfile);
+router.get('/downloadProfile', accountCtrl.downloadProfile);
 
 export default router;
