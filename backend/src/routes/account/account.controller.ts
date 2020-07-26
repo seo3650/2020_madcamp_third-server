@@ -150,7 +150,7 @@ exports.updateProfile = async (req: any, res: any) => {
         job: Joi.string().required(),
         hobby: Joi.string().required(),
         smoke: Joi.boolean().required(),
-        drink: Joi.number().required(),
+        drink: Joi.number().min(0).max(3).required(),
         self_instruction: Joi.string().required()
     });
     const result = schema.validate(req.body);

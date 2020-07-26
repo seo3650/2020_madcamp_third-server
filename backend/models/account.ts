@@ -24,6 +24,7 @@ const Account = new Schema({
     hobby: String,
     smoke: Boolean,
     drink: Number,
+    self_instruction: String,
     create_date: { type: Date, default: Date.now },
 })
 
@@ -41,7 +42,7 @@ Account.statics.register = function({ id, password, name, phoneNumber, macAddres
         blockList: [],
         profileImage: null,
         macAddress: macAddress,
-        gender: gender
+        gender: gender,
     });
     account.save();
     return id;
