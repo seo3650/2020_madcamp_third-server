@@ -151,6 +151,7 @@ exports.updateProfile = async (req: any, res: any) => {
         hobby: Joi.string().required(),
         smoke: Joi.boolean().required(),
         drink: Joi.number().required(),
+        self_instruction: Joi.string().required()
     });
     const result = schema.validate(req.body);
     if (result.error) {
@@ -182,7 +183,8 @@ exports.updateProfile = async (req: any, res: any) => {
                 job: req.body.job,
                 hobby: req.body.hobby,
                 smoke: req.body.smoke,
-                drink: req.body.drink
+                drink: req.body.drink,
+                self_instruction: req.body.self_instruction
             }
         }
     )
@@ -221,6 +223,7 @@ exports.downloadProfile = async (req: any, res: any) => {
         job: account.job,
         hobby: account.hobby,
         smoke: account.smoke,
-        drink: account.drink
+        drink: account.drink,
+        self_instruction: account.self_instruction
     });
 }

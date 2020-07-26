@@ -26,14 +26,14 @@ res: userID, userName
 
 ```
 /api/account/updateProfile - by POST
-req: id, age, region, height, job, hobby, smoke, drink
+req: id, age, region, height, job, hobby, smoke, drink, self_instruction
 res: boolean
 ```
 
 ```
 /api/account/downloadProfile - by GET
 req: id
-res: age, region, height, job, hobby, smoke, drink
+res: age, region, height, job, hobby, smoke, drink, self_instruction
 ```
 
 ## Friends crtl
