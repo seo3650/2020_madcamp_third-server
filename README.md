@@ -94,6 +94,12 @@ req: id, score
 res: score
 ```
 
+```
+/api/friend/getTodayFriend = by GET
+req: id, date
+res: friendID, position array, intimacyScore
+```
+
 ## Image crtl
 
 ```

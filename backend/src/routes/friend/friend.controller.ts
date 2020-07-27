@@ -181,6 +181,7 @@ exports.addContact = async(req: any, res: any) => {
     const continueTime = 5;
     const intimacyScore = calculateIntimacy(5, req.body.contactTime);
     const contactID = req.body.contactID;
+    const position = req.body.position;
 
     /* First meet friend */
     if (friends.length == 0) {
@@ -193,7 +194,8 @@ exports.addContact = async(req: any, res: any) => {
                         contactInfo: [{
                             contactTime: [contactTime],
                             continueTime: continueTime,
-                            intimacyScore: intimacyScore
+                            intimacyScore: intimacyScore,
+                            position: [position, position]
                         }]
                     }
                 }
@@ -234,6 +236,7 @@ exports.addContact = async(req: any, res: any) => {
 
     contactInfos.continueTime += continueTime;
     contactInfos.intimacyScore += intimacyScore;
+    contactInfos.position[1] = position;
     
     /* Update account's friends */
     await Account.updateOne(
@@ -294,32 +297,34 @@ exports.getIntimacy = async(req: any, res: any) => {
     }
 
     /* Get friend contact info */
-    let friendContactInfo: Array<any> = [];
+    let friends: Array<{
+        friendID: any,
+        contactInfo: Array<any>
+    }> = [];
     try {
-        friendContactInfo = await account.friends.filter(function(object: any) {
+        friends = await account.friends.filter(function(object: any) {
             return object.friendID.toString() == <string>friendAccount._id;
         })
     } catch (e) {
         res.status(500).json({ message: e.message });
         return;
     }
-
-    if (friendContactInfo.length == 0) {
-        res.status(404).json({ message: "Can't find friend contact info." });
-        return;
-    }
+    let friendContactInfo = friends[0].contactInfo
     
     /* Get intimacy score */
     let intimacyScore = 0;
-    let contactTimes = friendContactInfo[0].continueTime
-    for (var i = 0; i < contactTimes.length; i++) {
-        intimacyScore += contactTimes[i];
+    let contactTime: Array<Array<String>> = [];
+    let continueTime: Array<Number> = [];
+    for (var i = 0; i < friendContactInfo.length; i++) {
+        intimacyScore += friendContactInfo[i].intimacyScore;
+        contactTime.push(friendContactInfo[i].contactTime);
+        continueTime.push(friendContactInfo[i].continueTime);
     }
     
     res.status(200).json({ 
         intimacyScore: intimacyScore,
-        conatctTime: friendContactInfo[0].contactTime,
-        continueTime: friendContactInfo[0].continueTime});
+        contactTime,
+        continueTime});
 }
 
 exports.getContactID = async (req: any, res: any) => {

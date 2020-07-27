@@ -63,4 +63,8 @@ Account.methods.withdrawal = function() {
     return this.remove();
 }
 
+Account.statics.totalIntimacy = function() {
+    
+}
+
 module.exports = mongoose.model("Account", Account);
