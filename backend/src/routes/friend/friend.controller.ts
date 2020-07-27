@@ -320,9 +320,10 @@ exports.getIntimacy = async(req: any, res: any) => {
         contactTime.push(friendContactInfo[i].contactTime);
         continueTime.push(friendContactInfo[i].continueTime);
     }
+    let totalIntimacyScore = account.getTotalIntimacy();
     
     res.status(200).json({ 
-        intimacyScore: intimacyScore,
+        intimacyScore: intimacyScore / totalIntimacyScore,
         contactTime,
         continueTime});
 }
