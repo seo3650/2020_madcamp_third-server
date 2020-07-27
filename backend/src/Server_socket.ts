@@ -1,7 +1,7 @@
 const cookieParser =  require('cookie-parser');
-import morgan from 'morgan';
-import path from 'path';
-import helmet from 'helmet';
+const morgan = require( 'morgan');
+const path = require( 'path');
+const helmet = require( 'helmet');
 
 import express, { Request, Response, NextFunction } from 'express';
 import { BAD_REQUEST } from 'http-status-codes';

@@ -11,5 +11,6 @@ router.get('/getIntimacy', friendCtrl.getIntimacy);
 router.get('/getContactID', friendCtrl.getContactID);
 router.post('/sendLike', friendCtrl.sendLike);
 router.post('/sendStar', friendCtrl.sendStar);
+router.get('/getTodayFriend', friendCtrl.getTodayFriend);
 
 export default router;

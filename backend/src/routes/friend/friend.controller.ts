@@ -130,6 +130,7 @@ exports.addContact = async(req: any, res: any) => {
         contactID: Joi.number().required(),
         position: Joi.string().required(),
         contactTime: Joi.string().required(),
+        date: Joi.number().required(),
     });
     const result = schema.validate(req.body);
     if (result.error) {
@@ -182,6 +183,7 @@ exports.addContact = async(req: any, res: any) => {
     const intimacyScore = calculateIntimacy(5, req.body.contactTime);
     const contactID = req.body.contactID;
     const position = req.body.position;
+    const date = req.body.date;
 
     /* First meet friend */
     if (friends.length == 0) {
@@ -196,6 +198,7 @@ exports.addContact = async(req: any, res: any) => {
                             continueTime: continueTime,
                             intimacyScore: intimacyScore,
                             position: [position, position],
+                            date: date
                         }]
                     }
                 }
@@ -213,7 +216,9 @@ exports.addContact = async(req: any, res: any) => {
         friends[0].contactInfo.push ({
             contactTime: [],
             continueTime: 0,
-            intimacyScore: 0
+            intimacyScore: 0,
+            position: [position, position],
+            date: date
         });
     }
     contactInfos = friends[0].contactInfo[contactID];
@@ -332,7 +337,8 @@ exports.getContactID = async (req: any, res: any) => {
     /* Verify data */
     const schema = Joi.object().keys({
         id: Joi.string().required(),
-        friendID: Joi.string().required()
+        friendID: Joi.string().required(),
+        date: Joi.number().required(),
     });
     const result = schema.validate(req.query);
     if (result.error) {
@@ -367,17 +373,25 @@ exports.getContactID = async (req: any, res: any) => {
     }
 
     /* Get friend contact info */
-    let friendContactInfo: Array<any> = [];
+    let friends: Array<{
+        friendID: String,
+        contactInfo: Array<any>
+    }> = [];
     try {
-        friendContactInfo = await account.friends.filter(function(object: any) {
+        friends = await account.friends.filter(function(object: any) {
             return object.friendID.toString() == <string>friendAccount._id;
         })
     } catch (e) {
         res.status(500).json({ message: e.message });
         return;
     }
+    const number = friends[0].contactInfo.length;
+    if (number > 0 && friends[0].contactInfo[number - 1].date == req.query.date) {
+        res.status(200).json({ contactID: number - 1});
+        return;
+    }
 
-    res.status(200).json({ contactID: friendContactInfo.length })
+    res.status(200).json({ contactID: number })
 }
 
 function calculateIntimacy (long: number, when: string) {
@@ -473,4 +487,66 @@ exports.sendStar = async (req: any, res: any) => {
         }
     );
     res.status(200).json({ score: newScore });
+}
+
+exports.getTodayFriend = async (req: any, res: any) => {
+    /* Verify data */
+    const schema = Joi.object().keys({
+        id: Joi.string().required(),
+        date: Joi.number().required()
+    });
+    const result = schema.validate(req.query);
+    if (result.error) {
+        res.status(400).json({ message: result.error.message });
+        return;
+    }
+
+    /* Get account */
+    let account = null;
+    try {
+        account = await Account.findByID(req.query.id);
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+        return;
+    }
+    if (!account) {
+        res.status(404).json({ message: "Can't find account" });
+        return;
+    }
+
+    /* Get today friend */
+    const date = req.query.date;
+    let friendIDList: Array<String> = [];
+    let positionList: Array<Array<String>> = [];
+    let intimacyList: Array<Number> = [];
+    for (let i = 0; i < account.friends.length; i++) {
+        let contactInfo = account.friends[i].contactInfo;
+        for (let j = 0; j < contactInfo.length; j++) {
+            if (date == contactInfo[j].date) {
+                /* Get friend account */
+                let friend = null;
+                try {
+                    friend = await Account.findOne({ _id: account.friends[i].friendID });
+                } catch (e) {
+                    res.status(500).json({ message: e.message });
+                    return;
+                }
+                if (!account) {
+                    res.status(404).json({ message: "Can't find friend account" });
+                    return;
+                }
+
+                friendIDList.push(friend.id);
+                positionList.push(contactInfo[j].position);
+                let intimacyScore = contactInfo[j].intimacyScore / account.getTotalIntimacy();
+                intimacyList.push(intimacyScore * 100);
+            }
+        }
+    }
+
+    res.status(200).json({
+        friendID: friendIDList,
+        position: positionList,
+        intimacyScore: intimacyList
+    });
 }

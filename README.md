@@ -84,7 +84,7 @@ res: blockUserId
 
 ```
 /api/friend/getContactID - by GET
-req: id, friendID
+req: id, friendID, date
 res: contactID
 ```
 
@@ -103,7 +103,7 @@ res: score
 ```
 /api/friend/getTodayFriend = by GET
 req: id, date
-res: friendID, position array, intimacyScore
+res: friendID array, position array of array, intimacyScore array
 ```
 
 ## Image crtl
