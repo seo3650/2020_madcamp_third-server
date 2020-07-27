@@ -38,6 +38,18 @@ req: id
 res: age, region, height, job, hobby, smoke, drink, self_instruction
 ```
 
+```
+/api/account/getLike - by GET
+req: id
+res: friendID array
+```
+
+```
+/api/account/getStar - by GET
+req: id
+res: score
+```
+
 ## Friends crtl
 
 ```
@@ -68,6 +80,18 @@ res: blockUserId
 /api/friend/getContactID - by GET
 req: id, friendID
 res: contactID
+```
+
+```
+/api/friend/sendLike - by POST
+req: id, friendID,
+res: boolean
+```
+
+```
+/api/friend/sendStar - by POST
+req: id, score
+res: score
 ```
 
 ## Image crtl

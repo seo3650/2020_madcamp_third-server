@@ -9,5 +9,7 @@ router.delete('/delete', accountCtrl.withdrawal);
 router.get('/findUser', accountCtrl.findUser);
 router.post('/updateProfile', accountCtrl.updateProfile);
 router.get('/downloadProfile', accountCtrl.downloadProfile);
+router.get('/getLike', accountCtrl.getLike);
+router.get('/getStar', accountCtrl.getStar);
 
 export default router;

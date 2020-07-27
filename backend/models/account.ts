@@ -27,6 +27,8 @@ const Account = new Schema({
     self_instruction: String,
     school: String,
     major: String,
+    score: [Number],
+    likeList: [String],
     create_date: { type: Date, default: Date.now },
 })
 
@@ -45,6 +47,8 @@ Account.statics.register = function({ id, password, name, phoneNumber, macAddres
         profileImage: null,
         macAddress: macAddress,
         gender: gender,
+        score: [0, 0],
+        likeList: [],
     });
     account.save();
     return id;

@@ -384,3 +384,87 @@ function calculateIntimacy (long: number, when: string) {
         return long * 2;
     }
 }
+
+exports.sendLike = async (req: any, res: any) => {
+    /* Verify data */
+    const schema = Joi.object().keys({
+        id: Joi.string().required(),
+        friendID: Joi.string().required()
+    });
+    const result = schema.validate(req.body);
+    if (result.error) {
+        res.status(400).json({ message: result.error.message });
+        return;
+    }
+
+    /* Get account */
+    let account = null;
+    try {
+        account = await Account.findByID(req.body.id);
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+        return;
+    }
+    if (!account) {
+        res.status(404).json({ message: "Can't find account" });
+        return;
+    }
+
+    /* Check duplicate */
+    let likeUser = await account.likeList.filter(function(object: string) {
+        return object.toString() == req.body.friendID;
+    }) 
+    if (likeUser.length != 0) {
+        res.status(409).json({ message: "Already selected user." });
+        return;
+    }
+
+    await Account.updateOne(
+        { _id: account._id },
+        {
+            $push: {
+                likeList: req.body.friendID
+            }
+        }
+    );
+    res.status(200).json({ message: true });
+}
+
+exports.sendStar = async (req: any, res: any) => {
+    /* Verify data */
+    const schema = Joi.object().keys({
+        id: Joi.string().required(),
+        score: Joi.number().required()
+    });
+    const result = schema.validate(req.body);
+    if (result.error) {
+        res.status(400).json({ message: result.error.message });
+        return;
+    }
+
+    /* Get account */
+    let account = null;
+    try {
+        account = await Account.findByID(req.body.id);
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+        return;
+    }
+    if (!account) {
+        res.status(404).json({ message: "Can't find account" });
+        return;
+    }
+    let score = account.score[0];
+    let number = account.score[1];
+    let newScore = (score * number + req.body.score) / (number + 1);
+    
+    await Account.updateOne(
+        { _id: account._id },
+        {
+            $set: {
+                score: [newScore, number + 1]
+            }
+        }
+    );
+    res.status(200).json({ score: newScore });
+}
