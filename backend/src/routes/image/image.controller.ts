@@ -1,4 +1,4 @@
-var Joi = require('Joi');
+var Joi = require('joi');
 var Account = require('../../../models/account');
 
 exports.uploadProfile = async (req: any, res: any) => {

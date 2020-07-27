@@ -71,7 +71,7 @@ exports.login = async (req: any, res: any) => {
     }
     res.status(200).json({ userID: account.id, name: account.name })
 }
-
+// TODO: delete image file
 exports.withdrawal = async (req: any, res: any) => {
     /* Verifiy data */
     const schema = Joi.object().keys({

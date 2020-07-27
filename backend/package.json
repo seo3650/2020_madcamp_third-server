@@ -25,6 +25,7 @@
     "@server": "dist/Server"
   },
   "dependencies": {
+    "@types/mongoose": "^5.7.32",
     "command-line-args": "^5.1.1",
     "cookie-parser": "^1.4.5",
     "crypto": "^1.0.1",
