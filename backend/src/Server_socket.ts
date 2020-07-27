@@ -1,4 +1,4 @@
-import cookieParser from 'cookie-parser';
+const cookieParser =  require('cookie-parser');
 import morgan from 'morgan';
 import path from 'path';
 import helmet from 'helmet';
@@ -42,11 +42,13 @@ process.on('unhandledRejection', console.log);
 
 import http from 'http';
 import socketIO from 'socket.io';
+import { count } from 'console';
 const server = http.createServer(app);
 const io = socketIO(server);
+server.listen(80, () => {
+    console.log('connect 80');
+  });
 
-// var server = require('http').createServer(app);
-// var io = require('socket.io')(server);
 
 
 /************************************************************************************
@@ -93,12 +95,35 @@ app.get('*', (req: Request, res: Response) => {
     res.sendFile('index.html', {root: viewsDir});
 });
 
-io.on('chat message',function(socket: any){
-    socket.on('event_name',function(data : any){
+
+
+
+const namespace = io.of('/namespace');
+namespace.on('connection',(socket)=>{
+
+})
+var rooms = [];
+
+
+io.on('chatting',function(socket: any){
+    socket.on('join:room',function(data : any){
+        var room = data.room;
+        // if(rooms[room] == undifined){
+
+        // }
+
+        // socket.set('nickname',nickname,function(){
+        //     socket.emit('changename',{nickname:nickname});
+        // })
+
         console.log('Message from Client: '+data);
         io.to(data['roomName']).emit('message',data);
         //io.emit('message',JSON.stringify(data));
     })
+    socket.on('send:message',function(data : any){
+        io.sockets.in('room'+data.roomId).emit('send:message',data.message);
+    })
+
 });
 
 

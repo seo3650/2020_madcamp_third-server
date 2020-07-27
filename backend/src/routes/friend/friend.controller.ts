@@ -195,7 +195,7 @@ exports.addContact = async(req: any, res: any) => {
                             contactTime: [contactTime],
                             continueTime: continueTime,
                             intimacyScore: intimacyScore,
-                            position: [position, position]
+                            position: [position, position],
                         }]
                     }
                 }

@@ -290,3 +290,40 @@ exports.getStar = async (req: any, res: any) => {
 
     res.status(200).json({ score: account.score[0] })
 }
+
+exports.getTodayProbability = async(req: any, res: any) => {
+    /* Verify data */
+    const schema = Joi.object().keys({
+        id: Joi.string().required(),
+    });
+    const result = schema.validate(req.query);
+    if (result.error) {
+        res.status(400).json({ message: result.error.message });
+        return;
+    }
+
+    /* Get account */
+    let account = null;
+    try {
+        account = await Account.findByID(req.query.id);
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+        return;
+    }
+    if (!account) {
+        res.status(404).json({ message: "Can't find account" });
+        return;
+    }
+    let totalIntimacy = await getAllUserTotalIntimacy()
+    let intimacy = await account.getTotalIntimacy();
+    res.status(200).json({ probability: intimacy / totalIntimacy * 100 });
+}
+
+async function getAllUserTotalIntimacy() {
+    let score = 0;
+    let accounts = await Account.find()
+    for (let i = 0; i < accounts.length; ++i) {
+        score += accounts[i].getTotalIntimacy();
+    }
+    return score;
+}

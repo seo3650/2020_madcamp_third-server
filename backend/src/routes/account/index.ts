@@ -11,5 +11,6 @@ router.post('/updateProfile', accountCtrl.updateProfile);
 router.get('/downloadProfile', accountCtrl.downloadProfile);
 router.get('/getLike', accountCtrl.getLike);
 router.get('/getStar', accountCtrl.getStar);
+router.get('/getTodayProbability', accountCtrl.getTodayProbability);
 
 export default router;

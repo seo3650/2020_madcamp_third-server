@@ -50,11 +50,17 @@ req: id
 res: score
 ```
 
+```
+/api/account/getTodayProbability - by GET
+req: id
+res: probability
+```
+
 ## Friends crtl
 
 ```
 /api/friend/addContact - by POST
-req: id, friendID, contactID, position, contactTime
+req: id, friendID, contactID, position, contactTime, date
 res: intimacyScore
 ```
 

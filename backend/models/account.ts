@@ -63,8 +63,14 @@ Account.methods.withdrawal = function() {
     return this.remove();
 }
 
-Account.statics.totalIntimacy = function() {
-    
+Account.methods.getTotalIntimacy = function() {
+    let score = 0;
+    for (let i = 0; i < this.friends.length; i++) {
+        for (let j = 0; j < this.friends[i].contactInfo.length; j++) {
+            score += this.friends[i].contactInfo[j].intimacyScore;
+        }
+    }
+    return score;
 }
 
 module.exports = mongoose.model("Account", Account);
