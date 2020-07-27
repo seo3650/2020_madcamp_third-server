@@ -17,7 +17,7 @@ require('source-map-support').install();
 // Init express
 const app = express();
 
-mongoose.connect("mongodb://localhost/dating", 
+mongoose.connect("mongodb+srv://seo:sparcs@cluster0.onq1r.gcp.mongodb.net/dating?retryWrites=true&w=majority", 
   { useNewUrlParser: true, useUnifiedTopology: true });
 var db = mongoose.connection;
 db.on('error', function(error: any) {

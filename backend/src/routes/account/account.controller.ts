@@ -1,3 +1,5 @@
+import { resolveSoa } from "dns";
+
 var Joi = require('joi');
 var Account = require('../../../models/account');
 
@@ -226,4 +228,57 @@ exports.downloadProfile = async (req: any, res: any) => {
         drink: account.drink,
         self_instruction: account.self_instruction
     });
+}
+
+exports.getContactID = async (req: any, res: any) => {
+    /* Verify data */
+    const schema = Joi.object().keys({
+        id: Joi.string().required(),
+        friendID: Joi.string().required()
+    });
+    const result = schema.validate(req.query);
+    if (result.error) {
+        res.status(400).json({ message: result.error.message });
+        return;
+    }
+
+    /* Get account */
+    let account = null;
+    try {
+        account = await Account.findByID(req.query.id);
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+        return;
+    }
+    if (!account) {
+        res.status(404).json({ message: "Can't find account" });
+        return;
+    }
+
+    /* Find friend account */
+    let friendAccount: any = null;
+    try {
+        friendAccount = await Account.findByID(req.query.friendID);
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+        return;
+    }
+    if (!friendAccount) {
+        res.status(200).json({ contactID: 0 });
+        return;
+    }
+
+    /* Get friend contact info */
+    let friendContactInfo: Array<any> = [];
+    try {
+        friendContactInfo = await account.friends.filter(function(object: any) {
+            return object.friendID.toString() == <string>friendAccount._id;
+        })
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+        return;
+    }
+
+
+    res.status(200).json({ contactID: friendContactInfo.length })
 }

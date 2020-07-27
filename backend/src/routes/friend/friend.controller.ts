@@ -70,7 +70,7 @@ exports.deleteBlockUser = async (req: any, res: any) => {
         id: Joi.string().required(),
         unblockUserId: Joi.string().required(),
     });
-    const result = schema.validate(req.body);
+    const result = schema.validate(req.query);
     if (result.error) {
         res.status(400).json({ message: result.error.message });
         return;
@@ -79,7 +79,7 @@ exports.deleteBlockUser = async (req: any, res: any) => {
     /* Find account */
     let account = null;
     try {
-        account = await Account.findByID(req.body.id);
+        account = await Account.findByID(req.query.id);
     } catch (e) {
         res.status(500).json({ message: e.message });
         return;
@@ -91,7 +91,7 @@ exports.deleteBlockUser = async (req: any, res: any) => {
     /* Find block user */
     let blockAccount: any = null;
     try {
-        blockAccount = await Account.findByID(req.body.unblockUserId);
+        blockAccount = await Account.findByID(req.query.unblockUserId);
     } catch (e) {
         res.status(500).json({ message: e.message });
         return;
@@ -127,8 +127,9 @@ exports.addContact = async(req: any, res: any) => {
     const schema = Joi.object().keys({
         id: Joi.string().required(),
         friendID: Joi.string().required(),
-        contactTime: Joi.number().required(),
-        continueTime: Joi.number().required()
+        contactID: Joi.number().required(),
+        position: Joi.string().required(),
+        contactTime: Joi.string().required(),
     });
     const result = schema.validate(req.body);
     if (result.error) {
@@ -162,34 +163,79 @@ exports.addContact = async(req: any, res: any) => {
     }
 
     /* Add contact */
-    let friendContactInfo: Array<any> = [];
+    let friends: Array<{
+        friendID: any,
+        contactInfo: Array<any>
+    }> = [];
     try {
-        friendContactInfo = await account.friends.filter(function(object: any) {
+        friends = await account.friends.filter(function(object: any) {
             return object.friendID.toString() == <string>friendAccount._id;
         })
     } catch (e) {
         res.status(500).json({ message: e.message });
         return;
     }
+    /* Calculate contact info */
+    const contactTime = req.body.contactTime;
+    const continueTime = 5;
+    const intimacyScore = calculateIntimacy(5, req.body.contactTime);
+    const contactID = req.body.contactID;
 
-    if (friendContactInfo.length == 0) {
+    /* First meet friend */
+    if (friends.length == 0) {
         await Account.updateOne(
             { _id: account._id },
             {
                 $push: {
                     friends: {
                         friendID: friendAccount._id,
-                        contactTime: [req.body.contactTime],
-                        continueTime: [req.body.continueTime],
+                        contactInfo: [{
+                            contactTime: [contactTime],
+                            continueTime: continueTime,
+                            intimacyScore: intimacyScore
+                        }]
                     }
                 }
             }
         )
-        res.status(200).json({ message: true });
+        res.status(200).json({ intimacyScore: intimacyScore });
         return;
     }
-    friendContactInfo[0].contactTime.push(req.body.contactTime);
-    friendContactInfo[0].continueTime.push(req.body.continueTime);
+
+    let contactInfos = null;
+    if (friends[0].contactInfo.length < contactID) {
+        res.status(400).json({ message: "Invalid contactID" });
+        return;
+    } else if (friends[0].contactInfo.length == contactID) { // New meet with exist friend
+        friends[0].contactInfo.push ({
+            contactTime: [],
+            continueTime: 0,
+            intimacyScore: 0
+        });
+    }
+    contactInfos = friends[0].contactInfo[contactID];
+
+    /* Set contact time */
+    
+    console.log("Start add contact time, current contactInfos: ");
+    console.log(contactInfos);
+    let contactTimes: Array<any> = [];
+    try {
+        contactTimes = await contactInfos.contactTime.filter(function(object: any) {
+            return object.toString() == <string>contactTime;
+        })
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+        return;
+    }
+    if (contactTimes.length == 0) { // Meet at new contact Time
+        contactInfos.contactTime.push(contactTime);
+    }
+
+    contactInfos.continueTime += continueTime;
+    contactInfos.intimacyScore += intimacyScore;
+    
+    /* Update account's friends */
     await Account.updateOne(
         { _id: account._id },
         {
@@ -202,11 +248,11 @@ exports.addContact = async(req: any, res: any) => {
         { _id: account._id },
         {
             $push: {
-                friends: friendContactInfo
+                friends: friends
             }
         }
     )
-    res.status(200).json({ message: true });
+    res.status(200).json({ intimacyScore: intimacyScore });
 }
 
 exports.getIntimacy = async(req: any, res: any) => {
@@ -274,4 +320,15 @@ exports.getIntimacy = async(req: any, res: any) => {
         intimacyScore: intimacyScore,
         conatctTime: friendContactInfo[0].contactTime,
         continueTime: friendContactInfo[0].continueTime});
+}
+
+function calculateIntimacy (long: number, when: string) {
+    console.log(when)
+    if (when == "day") {
+        return long;
+    } else if (when == "dinner") {
+        return long * 1.5;
+    } else {
+        return long * 2;
+    }
 }
