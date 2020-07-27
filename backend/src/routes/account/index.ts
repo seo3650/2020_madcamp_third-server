@@ -9,6 +9,5 @@ router.delete('/delete', accountCtrl.withdrawal);
 router.get('/findUser', accountCtrl.findUser);
 router.post('/updateProfile', accountCtrl.updateProfile);
 router.get('/downloadProfile', accountCtrl.downloadProfile);
-router.get('/getContactID', accountCtrl.getContactID);
 
 export default router;

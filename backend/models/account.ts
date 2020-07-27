@@ -23,8 +23,10 @@ const Account = new Schema({
     job: String,
     hobby: String,
     smoke: Boolean,
-    drink: Number,
+    drink: Boolean,
     self_instruction: String,
+    school: String,
+    major: String,
     create_date: { type: Date, default: Date.now },
 })
 

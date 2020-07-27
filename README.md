@@ -4,7 +4,7 @@
 
 ```
 /api/account/register by POST
-req: id, password, name, phoneNumber, macAddress
+req: id, password, name, phoneNumber, macAddress, gender
 res: userID
 ```
 
@@ -28,7 +28,7 @@ res: userID, userName
 
 ```
 /api/account/updateProfile - by POST
-req: id, age, region, height, job, hobby, smoke, drink, self_instruction
+req: id, age, region, height, job, hobby, smoke, drink, self_instruction, school, major
 res: boolean
 ```
 
@@ -36,12 +36,6 @@ res: boolean
 /api/account/downloadProfile - by GET
 req: id
 res: age, region, height, job, hobby, smoke, drink, self_instruction
-```
-
-```
-/api/friend/getContactID - by GET
-req: id, friendID
-res: contactID
 ```
 
 ## Friends crtl

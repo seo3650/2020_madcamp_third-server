@@ -152,7 +152,9 @@ exports.updateProfile = async (req: any, res: any) => {
         job: Joi.string().required(),
         hobby: Joi.string().required(),
         smoke: Joi.boolean().required(),
-        drink: Joi.number().min(0).max(3).required(),
+        drink: Joi.boolean().required(),
+        school: Joi.string().required(),
+        major: Joi.string().required(),
         self_instruction: Joi.string().required()
     });
     const result = schema.validate(req.body);
@@ -186,7 +188,9 @@ exports.updateProfile = async (req: any, res: any) => {
                 hobby: req.body.hobby,
                 smoke: req.body.smoke,
                 drink: req.body.drink,
-                self_instruction: req.body.self_instruction
+                self_instruction: req.body.self_instruction,
+                school: req.body.school,
+                major: req.body.major
             }
         }
     )
@@ -226,59 +230,8 @@ exports.downloadProfile = async (req: any, res: any) => {
         hobby: account.hobby,
         smoke: account.smoke,
         drink: account.drink,
-        self_instruction: account.self_instruction
+        self_instruction: account.self_instruction,
+        school: account.school,
+        major: account.major
     });
-}
-
-exports.getContactID = async (req: any, res: any) => {
-    /* Verify data */
-    const schema = Joi.object().keys({
-        id: Joi.string().required(),
-        friendID: Joi.string().required()
-    });
-    const result = schema.validate(req.query);
-    if (result.error) {
-        res.status(400).json({ message: result.error.message });
-        return;
-    }
-
-    /* Get account */
-    let account = null;
-    try {
-        account = await Account.findByID(req.query.id);
-    } catch (e) {
-        res.status(500).json({ message: e.message });
-        return;
-    }
-    if (!account) {
-        res.status(404).json({ message: "Can't find account" });
-        return;
-    }
-
-    /* Find friend account */
-    let friendAccount: any = null;
-    try {
-        friendAccount = await Account.findByID(req.query.friendID);
-    } catch (e) {
-        res.status(500).json({ message: e.message });
-        return;
-    }
-    if (!friendAccount) {
-        res.status(200).json({ contactID: 0 });
-        return;
-    }
-
-    /* Get friend contact info */
-    let friendContactInfo: Array<any> = [];
-    try {
-        friendContactInfo = await account.friends.filter(function(object: any) {
-            return object.friendID.toString() == <string>friendAccount._id;
-        })
-    } catch (e) {
-        res.status(500).json({ message: e.message });
-        return;
-    }
-
-
-    res.status(200).json({ contactID: friendContactInfo.length })
 }
