@@ -224,6 +224,7 @@ exports.downloadProfile = async (req: any, res: any) => {
     }
 
     res.status(200).json({ 
+        userName: account.name,
         age: account.age,
         region: account.region,
         height: account.height,

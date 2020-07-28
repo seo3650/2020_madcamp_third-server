@@ -35,7 +35,7 @@ res: boolean
 ```
 /api/account/downloadProfile - by GET
 req: id
-res: age, region, height, job, hobby, smoke, drink, self_instruction
+res: userName, age, region, height, job, hobby, smoke, drink, self_instruction
 ```
 
 ```
