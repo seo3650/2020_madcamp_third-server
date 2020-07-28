@@ -28,7 +28,7 @@ res: userID, userName
 
 ```
 /api/account/updateProfile - by POST
-req: id, age, region, height, job, hobby, smoke, drink, self_instruction, school, major
+req: id, age, height, job, hobby, smoke, drink, self_instruction, school, major
 res: boolean
 ```
 
