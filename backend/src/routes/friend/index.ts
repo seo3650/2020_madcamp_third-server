@@ -12,5 +12,6 @@ router.get('/getContactID', friendCtrl.getContactID);
 router.post('/sendLike', friendCtrl.sendLike);
 router.post('/sendStar', friendCtrl.sendStar);
 router.get('/getTodayFriend', friendCtrl.getTodayFriend);
+router.put('/registerMatch', friendCtrl.registerMatch);
 
 export default router;

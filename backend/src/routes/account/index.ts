@@ -12,5 +12,6 @@ router.get('/downloadProfile', accountCtrl.downloadProfile);
 router.get('/getLike', accountCtrl.getLike);
 router.get('/getStar', accountCtrl.getStar);
 router.get('/getTodayProbability', accountCtrl.getTodayProbability);
+router.get('/getMatch', accountCtrl.getMatch);
 
 export default router;

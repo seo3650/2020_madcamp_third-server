@@ -56,6 +56,12 @@ req: id
 res: probability
 ```
 
+```
+/api/account/getMatch - by GET
+req: id
+res: friendID array, friendName array, intimacyScore array
+```
+
 ## Friends crtl
 
 ```
@@ -101,9 +107,15 @@ res: score
 ```
 
 ```
-/api/friend/getTodayFriend = by GET
+/api/friend/getTodayFriend - by GET
 req: id, date
-res: friendID array, position array of array, intimacyScore array
+res: friendId array, friendName array position array of array, intimacyScore array, contactTime array of array
+```
+
+```
+/api/friend/registerMatch - by PUT
+req: id, friendID
+res: boolean
 ```
 
 ## Image crtl

@@ -517,8 +517,11 @@ exports.getTodayFriend = async (req: any, res: any) => {
     /* Get today friend */
     const date = req.query.date;
     let friendIDList: Array<String> = [];
+    let friendNameList: Array<String> = [];
     let positionList: Array<Array<String>> = [];
     let intimacyList: Array<Number> = [];
+    let contactTimeList: Array<Array<String>> = [];
+
     for (let i = 0; i < account.friends.length; i++) {
         let contactInfo = account.friends[i].contactInfo;
         for (let j = 0; j < contactInfo.length; j++) {
@@ -531,22 +534,87 @@ exports.getTodayFriend = async (req: any, res: any) => {
                     res.status(500).json({ message: e.message });
                     return;
                 }
-                if (!account) {
+                if (!friend) {
                     res.status(404).json({ message: "Can't find friend account" });
                     return;
                 }
+                console.log(friend)
 
                 friendIDList.push(friend.id);
+                friendNameList.push(friend.name);
                 positionList.push(contactInfo[j].position);
                 let intimacyScore = contactInfo[j].intimacyScore / account.getTotalIntimacy();
                 intimacyList.push(intimacyScore * 100);
+                contactTimeList.push(contactInfo[j].contactTime);
             }
         }
     }
 
     res.status(200).json({
         friendID: friendIDList,
+        friendName: friendNameList,
         position: positionList,
-        intimacyScore: intimacyList
+        intimacyScore: intimacyList,
+        contactTime: contactTimeList,
     });
+}
+
+exports.registerMatch = async (req: any, res: any) => {
+    /* Verify data */
+    const schema = Joi.object().keys({
+        id: Joi.string().required(),
+        friendID: Joi.string().required()
+    });
+    const result = schema.validate(req.body);
+    if (result.error) {
+        res.status(400).json({ message: result.error.message });
+        return;
+    }
+
+    /* Get account */
+    let account = null;
+    try {
+        account = await Account.findByID(req.body.id);
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+        return;
+    }
+    if (!account) {
+        res.status(404).json({ message: "Can't find account" });
+        return;
+    }
+
+    /* Get friend account */
+    let friend: any = null;
+    try {
+        friend = await Account.findByID(req.body.friendID);
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+        return;
+    }
+    if (!friend) {
+        res.status(404).json({ message: "Can't find friend account" });
+        return;
+    }
+
+    /* Check duplicate */
+    let matchingUser = await account.matchingList.filter(function(object: string) {
+        return object.toString() == friend._id;
+    }) 
+    if (matchingUser.length != 0) {
+        res.status(409).json({ message: "Already matched user." });
+        return;
+    }
+
+    /* Add match user */
+    await Account.updateOne(
+        { _id: account._id },
+        {
+            $push: {
+                matchingList: friend._id
+            }
+        }
+    );
+
+    res.status(200).json({ message: true });
 }

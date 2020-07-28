@@ -29,6 +29,7 @@ const Account = new Schema({
     major: String,
     score: [Number],
     likeList: [String],
+    matchingList: [String],
     create_date: { type: Date, default: Date.now },
 })
 

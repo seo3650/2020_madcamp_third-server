@@ -320,6 +320,60 @@ exports.getTodayProbability = async(req: any, res: any) => {
     res.status(200).json({ probability: intimacy / totalIntimacy * 100 });
 }
 
+exports.getMatch = async(req: any, res: any) => {
+    /* Verify data */
+    const schema = Joi.object().keys({
+        id: Joi.string().required(),
+    });
+    const result = schema.validate(req.query);
+    if (result.error) {
+        res.status(400).json({ message: result.error.message });
+        return;
+    }
+
+    /* Get account */
+    let account: any = null;
+    try {
+        account = await Account.findByID(req.query.id);
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+        return;
+    }
+    if (!account) {
+        res.status(404).json({ message: "Can't find account" });
+        return;
+    }
+
+    let friendIDList: Array<String> = [];
+    let friendNameList: Array<String> = [];
+    let intimacyScoreList: Array<Number> = [];
+
+    for (let i = 0; i < account.matchingList.length; ++i) {
+        /* Get friend account */
+        let friend: any = null;
+        try {
+            friend = await Account.findOne({ _id: account.matchingList[i] });
+        } catch (e) {
+            res.status(500).json({ message: e.message });
+            return;
+        }
+        if (!friend) {
+            res.status(404).json({ message: "Can't find friend account" });
+            return;
+        }
+
+        friendIDList.push(friend.id);
+        friendNameList.push(friend.name);
+        intimacyScoreList.push(friend.intimacyScore);
+    }
+
+    res.status(200).json({
+        friendID: friendIDList,
+        friendName: friendNameList,
+        intimacyScore: intimacyScoreList,
+    })
+}
+
 async function getAllUserTotalIntimacy() {
     let score = 0;
     let accounts = await Account.find()
