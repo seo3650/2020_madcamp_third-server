@@ -1,4 +1,5 @@
 import { resolveSoa } from "dns";
+import e from 'express';
 
 var Joi = require('joi');
 var Account = require('../../../models/account');
@@ -136,7 +137,7 @@ exports.findUser = async (req: any, res: any) => {
         res.status(404).json({ message: "Can't find account" });
         return;
     }
-    console.log(account)
+    // console.log(account)
 
     res.status(200).json({ userID: account.id, userName: account.name });
 
@@ -262,7 +263,26 @@ exports.getLike = async (req: any, res: any) => {
         return;
     }
 
-    res.status(200).json({ friendID: account.likeList })
+    let friendNameList = []
+    for (let i = 0; i < account.likeList.length; ++i) {
+        /* Get friend account */
+        let friend = null;
+        try {
+            friend = await Account.findByID(account.likeList[i]);
+        } catch(e) {
+            res.status(500).json({ message: e.message });
+        }
+        if (friend == null) {
+            res.status(404).json({ message: "Can't find friend account." })
+        }
+
+        friendNameList.push(friend.name);
+    }
+
+    res.status(200).json({ 
+        friendID: account.likeList,
+        friendName: friendNameList,
+    });
 }
 
 exports.getStar = async (req: any, res: any) => {
@@ -347,6 +367,7 @@ exports.getMatch = async(req: any, res: any) => {
     let friendIDList: Array<String> = [];
     let friendNameList: Array<String> = [];
     let intimacyScoreList: Array<Number> = [];
+    let phoneNumberList: Array<String> = [];
 
     for (let i = 0; i < account.matchingList.length; ++i) {
         /* Get friend account */
@@ -364,13 +385,37 @@ exports.getMatch = async(req: any, res: any) => {
 
         friendIDList.push(friend.id);
         friendNameList.push(friend.name);
-        intimacyScoreList.push(friend.intimacyScore);
+        phoneNumberList.push(friend.phoneNumber);
+        
+        /* Get friend contact info */
+        let friends: Array<{
+            friendID: any,
+            contactInfo: Array<any>
+        }> = [];
+        try {
+            friends = await account.friends.filter(function(object: any) {
+                return object.friendID.toString() == <string>friend._id;
+            })
+        } catch (e) {
+            res.status(500).json({ message: e.message });
+            return;
+        }
+        let friendContactInfo = friends[0].contactInfo
+
+        /* Get intimacy score */
+        let intimacyScore = 0;
+        for (var j = 0; j < friendContactInfo.length; j++) {
+            intimacyScore += friendContactInfo[i].intimacyScore;
+        }
+
+        intimacyScoreList.push(intimacyScore);
     }
 
     res.status(200).json({
         friendID: friendIDList,
         friendName: friendNameList,
         intimacyScore: intimacyScoreList,
+        phoneNumber: phoneNumberList,
     })
 }
 

@@ -13,5 +13,6 @@ router.post('/sendLike', friendCtrl.sendLike);
 router.post('/sendStar', friendCtrl.sendStar);
 router.get('/getTodayFriend', friendCtrl.getTodayFriend);
 router.put('/registerMatch', friendCtrl.registerMatch);
+router.delete('/deleteLike', friendCtrl.deleteLike);
 
 export default router;

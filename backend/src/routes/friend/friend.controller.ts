@@ -228,8 +228,8 @@ exports.addContact = async(req: any, res: any) => {
     contactInfos = friends[0].contactInfo[contactID];
 
     /* Set contact time */
-    console.log("Start add contact time, current contactInfos: ");
-    console.log(contactInfos);
+    // console.log("Start add contact time, current contactInfos: ");
+    // console.log(contactInfos);
     let contactTimes: Array<any> = [];
     try {
         contactTimes = await contactInfos.contactTime.filter(function(object: any) {
@@ -421,22 +421,22 @@ exports.sendLike = async (req: any, res: any) => {
         return;
     }
 
-    /* Get account */
-    let account = null;
+    /* Get friend account */
+    let friend = null;
     try {
-        account = await Account.findByID(req.body.id);
+        friend = await Account.findByID(req.body.friendID);
     } catch (e) {
         res.status(500).json({ message: e.message });
         return;
     }
-    if (!account) {
-        res.status(404).json({ message: "Can't find account" });
+    if (!friend) {
+        res.status(404).json({ message: "Can't find friend account" });
         return;
     }
 
     /* Check duplicate */
-    let likeUser = await account.likeList.filter(function(object: string) {
-        return object.toString() == req.body.friendID;
+    let likeUser = await friend.likeList.filter(function(object: string) {
+        return object.toString() == req.body.id;
     }) 
     if (likeUser.length != 0) {
         res.status(409).json({ message: "Already selected user." });
@@ -444,10 +444,10 @@ exports.sendLike = async (req: any, res: any) => {
     }
 
     await Account.updateOne(
-        { _id: account._id },
+        { _id: friend._id },
         {
             $push: {
-                likeList: req.body.friendID
+                likeList: req.body.id
             }
         }
     );
@@ -621,4 +621,40 @@ exports.registerMatch = async (req: any, res: any) => {
     );
 
     res.status(200).json({ message: true });
+}
+
+exports.deleteLike = async (req: any, res: any) => {
+    /* Verify data */
+    const schema = Joi.object().keys({
+        id: Joi.string().required(),
+        friendID: Joi.string().required()
+    });
+    const result = schema.validate(req.query);
+    if (result.error) {
+        res.status(400).json({ message: result.error.message });
+        return;
+    }
+
+    /* Get account */
+    let account = null;
+    try {
+        account = await Account.findByID(req.query.id);
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+        return;
+    }
+    if (!account) {
+        res.status(404).json({ message: "Can't find account" });
+        return;
+    }
+
+    await Account.updateOne(
+        { _id: account._id },
+        {
+            $pull: {
+                likeList: req.query.friendID
+            }
+        }
+    );
+    res.status(200).send();
 }

@@ -41,7 +41,7 @@ res: userName, age, region, height, job, hobby, smoke, drink, self_instruction
 ```
 /api/account/getLike - by GET
 req: id
-res: friendID array
+res: friendID array, friendName array
 ```
 
 ```
@@ -59,7 +59,7 @@ res: probability
 ```
 /api/account/getMatch - by GET
 req: id
-res: friendID array, friendName array, intimacyScore array
+res: friendID array, friendName array, intimacyScore array, phoneNumber array
 ```
 
 ## Friends crtl
@@ -116,6 +116,12 @@ res: friendId array, friendName array position array of array, intimacyScore arr
 /api/friend/registerMatch - by PUT
 req: id, friendID
 res: boolean
+```
+
+```
+/api/friend/deleteLike - by DELETE
+req: id, friendID
+res: None
 ```
 
 ## Image crtl
