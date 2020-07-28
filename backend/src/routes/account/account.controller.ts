@@ -147,6 +147,7 @@ exports.updateProfile = async (req: any, res: any) => {
     const schema = Joi.object().keys({
         id: Joi.string().required(),
         age: Joi.number().required(),
+        region: Joi.string().required(),
         height: Joi.number().required(),
         job: Joi.string().required(),
         hobby: Joi.string().required(),
@@ -183,6 +184,7 @@ exports.updateProfile = async (req: any, res: any) => {
             $set: {
                 age: req.body.age,
                 height: req.body.height,
+                region: req.body.region,
                 job: req.body.job,
                 hobby: req.body.hobby,
                 smoke: req.body.smoke,

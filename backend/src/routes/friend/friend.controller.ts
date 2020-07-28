@@ -147,6 +147,8 @@ exports.addContact = async(req: any, res: any) => {
         return;
     }
     if (!account) {
+        console.log("Can't find account");
+        console.log(req.body);
         res.status(404).json({ message: "Can't find account" });
         return;
     }
@@ -160,6 +162,8 @@ exports.addContact = async(req: any, res: any) => {
         return;
     }
     if (!friendAccount) {
+        console.log("Can't find friend account");
+        console.log(req.body);
         res.status(404).json({ message: "Can't find friend account" });
         return;
     }
